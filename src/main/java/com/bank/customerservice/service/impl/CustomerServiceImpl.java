@@ -3,11 +3,14 @@ package com.bank.customerservice.service.impl;
 import com.bank.customerservice.dto.*;
 import com.bank.customerservice.entity.Customer;
 import com.bank.customerservice.entity.KycStatus;
+import com.bank.customerservice.events.AccountCreationEvent;
 import com.bank.customerservice.exception.ResourceNotFoundException;
+import com.bank.customerservice.kafka.KafkaEventProducer;
 import com.bank.customerservice.mapper.CustomerMapper;
 import com.bank.customerservice.repository.CustomerRepository;
 import com.bank.customerservice.service.CustomerService;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final KafkaEventProducer kafkaEventProducer;
+    private final ObjectMapper objectMapper;
 
     // ❌ REMOVE THIS MANUAL CONSTRUCTOR - @RequiredArgsConstructor handles this automatically
     // public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
@@ -103,16 +108,42 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMapper.toDto(customer);
     }
 
+//    @Override
+//    public CustomerResponse updateKycStatus(Long customerId, KycStatusUpdateRequest request) {
+//        Customer customer = customerRepository.findById(customerId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+//
+//        customer.setKycStatus(request.getKycStatus());
+//
+//        Customer updated = customerRepository.save(customer);
+//        return customerMapper.toDto(updated, request.getMessage() != null ? request.getMessage() : "KYC status updated");
+//    }
+
+    // KAFKA
     @Override
     public CustomerResponse updateKycStatus(Long customerId, KycStatusUpdateRequest request) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         customer.setKycStatus(request.getKycStatus());
-
         Customer updated = customerRepository.save(customer);
-        return customerMapper.toDto(updated, request.getMessage() != null ? request.getMessage() : "KYC status updated");
+
+        // Produce event when VERIFIED
+        if (KycStatus.VERIFIED.equals(request.getKycStatus())) {
+            try {
+                AccountCreationEvent event = new AccountCreationEvent(updated.getCustomerId());
+                String json = objectMapper.writeValueAsString(event);
+                kafkaEventProducer.sendMessage(json);
+                log.info("Published account creation event for customerId {}", updated.getCustomerId());
+            } catch (Exception ex) {
+                log.error("Failed to publish account creation event for customer {}", updated.getCustomerId(), ex);
+            }
+        }
+
+        return customerMapper.toDto(updated,
+                request.getMessage() != null ? request.getMessage() : "KYC status updated");
     }
+
 
     // ======= USER-CUSTOMER RESOLUTION METHODS =======
 

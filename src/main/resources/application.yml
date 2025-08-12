@@ -2,10 +2,12 @@ server:
   port: 8081
 
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
   datasource:
     url: jdbc:oracle:thin:@localhost:1521/FREEPDB1
-    username: RAGHUL
-    password: 6379362346
+    username: PROJECT
+    password: Gopi_2003
     driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:

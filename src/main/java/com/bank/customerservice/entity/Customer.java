@@ -61,28 +61,44 @@ public class Customer {
         this.customerId = customerId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public LocalDateTime getRegisteredAt() {
+        return registeredAt;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setRegisteredAt(LocalDateTime registeredAt) {
+        this.registeredAt = registeredAt;
     }
 
-    public String getFullName() {
-        return fullName;
+    public KycStatus getKycStatus() {
+        return kycStatus;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setKycStatus(KycStatus kycStatus) {
+        this.kycStatus = kycStatus;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getAadhaar() {
+        return aadhaar;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setAadhaar(String aadhaar) {
+        this.aadhaar = aadhaar;
+    }
+
+    public String getPan() {
+        return pan;
+    }
+
+    public void setPan(String pan) {
+        this.pan = pan;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getEmail() {
@@ -101,43 +117,27 @@ public class Customer {
         this.dob = dob;
     }
 
-    public String getAddress() {
-        return address;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getPan() {
-        return pan;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setPan(String pan) {
-        this.pan = pan;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public String getAadhaar() {
-        return aadhaar;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setAadhaar(String aadhaar) {
-        this.aadhaar = aadhaar;
-    }
-
-    public KycStatus getKycStatus() {
-        return kycStatus;
-    }
-
-    public void setKycStatus(KycStatus kycStatus) {
-        this.kycStatus = kycStatus;
-    }
-
-    public LocalDateTime getRegisteredAt() {
-        return registeredAt;
-    }
-
-    public void setRegisteredAt(LocalDateTime registeredAt) {
-        this.registeredAt = registeredAt;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
